@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
-import { IsBoolean, IsString, Length } from "class-validator";
+import { IsBoolean, IsOptional, IsString, Length } from "class-validator";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @InputType({ isAbstract: true })
@@ -16,20 +16,23 @@ export class Restaurant {
     @Length(5)
     name: string;
 
-    @Field(type => Boolean, { nullable: true }) //graphql thing.
-    @Column() //typeorm thing
+    @Field(type => Boolean, { defaultValue: true }) //graphql thing. //defaultValue= true for graphql scehma.
+    @Column({ default: true }) //typeorm thing // defaultValue = true
+    @IsOptional() // check if value is missing ignores all validators.
     @IsBoolean()
     isVegan?: Boolean;
 
     @Field(type => String) //graphql thing.
     @Column() //typeorm thing
+    @IsString()
     address: string;
 
-    @Field(type => String) //graphql thing.
-    @Column() //typeorm thing
-    ownersName?: String;
+    // @Field(type => String) //graphql thing.
+    // @Column() //typeorm thing
+    // ownersName?: String;
 
-    @Field(type => String) //graphql thing.
-    @Column() //typeorm thing
-    categoryName?: String;
+    // @Field(type => String) //graphql thing.
+    // @Column() //typeorm thing
+    // @IsString()
+    // categoryName?: String;
 }
