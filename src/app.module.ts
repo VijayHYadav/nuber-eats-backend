@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import * as Joi from 'joi'; // this is how to import that package that has only js no ts.
+import * as Joi from 'joi'; // this is how to import that package that has only js / javascript no ts / typescript.
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql'
 import { TypeOrmModule } from '@nestjs/typeorm';
