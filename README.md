@@ -2,7 +2,7 @@
 
 The Backend of Number Eats Clone
 
-## User Model:
+## User Entity:
 
 - id
 - createdAt
