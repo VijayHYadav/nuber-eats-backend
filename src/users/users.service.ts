@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { CreateAccountInput } from "./dtos/create-account.dto";
-import { User } from "./entities/user.entity";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateAccountInput } from './dtos/create-account.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -10,18 +10,16 @@ export class UsersService {
         @InjectRepository(User) private readonly users: Repository<User>
     ) { }
 
-    async createAccout({email, password, role}: CreateAccountInput): Promise<string | undefined> {
+    async createAccout({ email, password, role }: CreateAccountInput): Promise<[boolean, string?]> {
         try {
-            // check new user
             const exists = await this.users.findOne({ email });
             if (exists) {
-                // make error
-                return "There is a user with that email already";
+                return [false, 'There is a user with that email already'];
             }
             await this.users.save(this.users.create({ email, password, role }));
-            return;
+            return [true];
         } catch (e) {
-            return "Couldn't create account";
+            return [false, "Couldn't create account"];
         }
     }
 }
