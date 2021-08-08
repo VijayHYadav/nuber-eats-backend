@@ -35,7 +35,7 @@ export class User extends CoreEntity {
     role: UserRole;
 
     @BeforeInsert()
-    @BeforeUpdate()
+    @BeforeUpdate() // @BeforeUpdate() happens only when there is update on entity.
     async hashPassword(): Promise<void> {
         try {
             this.password = await bcrypt.hash(this.password, 10);
