@@ -13,7 +13,7 @@ import { UsersService } from './users.service';
 export class UsersResolver {
     constructor(
         private readonly usersService: UsersService
-    ){}
+    ) { }
 
     @Mutation(returns => CreateAccountOutput)
     async createAccount(@Args('input') createAccountInput: CreateAccountInput): Promise<CreateAccountOutput> {
@@ -67,10 +67,13 @@ export class UsersResolver {
 
     @UseGuards(AuthGuard)
     @Mutation(returns => EditProfileOutput)
-    async editProfile(@AuthUser() authUser: User, @Args('input') editProfileInput:EditProfileInput): Promise<EditProfileOutput> {
+    async editProfile(@AuthUser() authUser: User, @Args('input') editProfileInput: EditProfileInput): Promise<EditProfileOutput> {
         try {
             await this.usersService.editProfile(authUser.id, editProfileInput);
-        } catch(error) {
+            return {
+                ok: true,
+            }
+        } catch (error) {
             return { ok: false, error }
         }
     }
