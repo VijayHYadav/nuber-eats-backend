@@ -77,4 +77,8 @@ export class UsersResolver {
             return { ok: false, error }
         }
     }
+
+    // @Mutation(returns => {
+
+    // })
 }

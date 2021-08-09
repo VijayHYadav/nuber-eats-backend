@@ -3,7 +3,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import * as bcrypt from "bcrypt";
 import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { InternalServerError } from 'http-errors';
-import { IsEmail, IsEnum } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { InternalServerErrorException } from '@nestjs/common';
 
 // type UserRole = 'client' | 'owner' | 'delivery';
@@ -13,7 +13,7 @@ enum UserRole {
     Delivery
 }
 
-registerEnumType(UserRole, {name: "UserRole"})
+registerEnumType(UserRole, { name: "UserRole" })
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -27,6 +27,7 @@ export class User extends CoreEntity {
 
     @Column()
     @Field(type => String)
+    @IsString()
     password: string;
 
     @Column({ type: 'enum', enum: UserRole })
@@ -36,19 +37,23 @@ export class User extends CoreEntity {
 
     @Column({ default: false })
     @Field(type => Boolean)
+    @IsBoolean()
     verified: boolean;
 
     @BeforeInsert()
     @BeforeUpdate() // @BeforeUpdate() happens only when there is update on entity.
     async hashPassword(): Promise<void> {
-        try {
-            this.password = await bcrypt.hash(this.password, 10);
-        } catch (e) {
-            throw new InternalServerError();
+        if (this.password) {
+            try {
+                this.password = await bcrypt.hash(this.password, 10);
+            } catch (e) {
+                console.log(e);
+                throw new InternalServerErrorException();
+            }
         }
     }
 
-    async checkPassword(aPassword: string) : Promise<boolean> {
+    async checkPassword(aPassword: string): Promise<boolean> {
         try {
             const ok = await bcrypt.compare(aPassword, this.password);
             return ok;
