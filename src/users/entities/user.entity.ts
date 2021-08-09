@@ -25,7 +25,7 @@ export class User extends CoreEntity {
     @IsEmail()
     email: string;
 
-    @Column()
+    @Column({ select: false }) // step 1 of don't encry the encrypet password 
     @Field(type => String)
     @IsString()
     password: string;
@@ -43,7 +43,7 @@ export class User extends CoreEntity {
     @BeforeInsert()
     @BeforeUpdate() // @BeforeUpdate() happens only when there is update on entity.
     async hashPassword(): Promise<void> {
-        if (this.password) {
+        if (this.password) { // step 2 of don't encry the encrypet password  
             try {
                 this.password = await bcrypt.hash(this.password, 10);
             } catch (e) {
