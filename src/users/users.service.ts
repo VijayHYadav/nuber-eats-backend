@@ -9,13 +9,17 @@ import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(User) private readonly users: Repository<User>,
-        @InjectRepository(Verification) private readonly verifications: Repository<Verification>,
+        @InjectRepository(User)
+        private readonly users: Repository<User>,
+        @InjectRepository(Verification)
+        private readonly verifications: Repository<Verification>,
         private readonly jwtService: JwtService,
+        private readonly mailService: MailService,
     ) { }
 
     async createAccout({ email, password, role }: CreateAccountInput): Promise<CreateAccountOutput> {
@@ -32,6 +36,7 @@ export class UsersService {
                     user,
                 }),
             );
+            this.mailService.sendVerificationEmail(user.email, verification.code);
             return { ok: true };
         } catch (e) {
             console.log(e);
@@ -91,7 +96,8 @@ export class UsersService {
             if (email) {
                 user.email = email;
                 user.verified = false;
-                await this.verifications.save(this.verifications.create({ user }));
+                const verification = await this.verifications.save(this.verifications.create({ user }));
+                this.mailService.sendVerificationEmail(user.email, verification.code);
             }
             if (password) {
                 user.password = password;
