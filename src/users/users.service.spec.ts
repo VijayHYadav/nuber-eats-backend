@@ -79,6 +79,7 @@ describe("UserService", () => {
                 error: 'There is a user with that email already',
             });
         });
+
         it('should create a new user', async () => {
             userRepository.findOne.mockReturnValue(undefined);
             userRepository.create.mockReturnValue(createAccoutArgs);
@@ -107,8 +108,28 @@ describe("UserService", () => {
             expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(expect.any(String), expect.any(String));
             expect(result).toEqual({ ok: true });
         });
+
+        it('should fail on exception', async () => {
+            userRepository.findOne.mockRejectedValue(new Error(":"));
+            const result = await service.createAccout(createAccoutArgs);
+            expect(result).toEqual({ ok: false, error: "Couldn't create account" })
+        });
+
     });
-    it.todo('login');
+
+    describe('login', () => {
+        const loginArgs = { email: '', password: '' }
+        it('should fail if user does not exist', async () => {
+            userRepository.findOne.mockReturnValue(null);
+            const result = await service.login(loginArgs);
+            expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(userRepository.findOne).toHaveBeenCalledWith(expect.any(Object), expect.any(Object));
+            expect(result).toEqual({
+                ok: false,
+                error: 'User not found',
+            })
+        })
+    });
     it.todo('findById');
     it.todo('editProfile');
     it.todo('verifyEmail');
