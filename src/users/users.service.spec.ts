@@ -118,7 +118,7 @@ describe("UserService", () => {
     });
 
     describe('login', () => {
-        const loginArgs = { email: '', password: '' }
+        const loginArgs = { email: 'dummy@email.com', password: 'dummy_pwd' }
         it('should fail if user does not exist', async () => {
             userRepository.findOne.mockReturnValue(null);
             const result = await service.login(loginArgs);
