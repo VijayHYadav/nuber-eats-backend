@@ -59,7 +59,21 @@ describe("UserService", () => {
     })
 
     describe('createAccout', () => {
-        it("should fail if user exists", () => { })
+        it("should fail if user exists", async () => {
+            userRepository.findOne.mockResolvedValue({
+                id: 1,
+                email: "mock@email.com"
+            });
+            const result = await service.createAccout({
+                email: "",
+                password: "",
+                role: 0
+            });
+            expect(result).toMatchObject({
+                ok: false,
+                error: 'There is a user with that email already',
+            })
+        });
     });
     it.todo('login');
     it.todo('findById');
