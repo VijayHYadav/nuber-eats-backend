@@ -7,11 +7,11 @@ import { User } from "./entities/user.entity";
 import { Verification } from "./entities/verification.entity";
 import { UsersService } from "./users.service";
 
-const mockRepository = {
+const mockRepository = () => ({
     findOne: jest.fn(),
     save: jest.fn(),
     create: jest.fn(),
-}
+})
 
 const mockJwtService = {
     sign: jest.fn(),
@@ -34,11 +34,11 @@ describe("UserService", () => {
             providers: [UsersService,
                 {
                     provide: getRepositoryToken(User),
-                    useValue: mockRepository
+                    useValue: mockRepository()
                 },
                 {
                     provide: getRepositoryToken(Verification),
-                    useValue: mockRepository
+                    useValue: mockRepository()
                 },
                 {
                     provide: JwtService,
@@ -59,20 +59,30 @@ describe("UserService", () => {
     })
 
     describe('createAccout', () => {
+        const createAccoutArgs = {
+            email: "",
+            password: "",
+            role: 0
+        }
         it("should fail if user exists", async () => {
             userRepository.findOne.mockResolvedValue({
                 id: 1,
                 email: "mock@email.com"
             });
-            const result = await service.createAccout({
-                email: "",
-                password: "",
-                role: 0
-            });
+            const result = await service.createAccout(createAccoutArgs);
             expect(result).toMatchObject({
                 ok: false,
                 error: 'There is a user with that email already',
             });
+        });
+        it('should create a new user', async () => {
+            userRepository.findOne.mockReturnValue(undefined);
+            userRepository.create.mockReturnValue(createAccoutArgs);
+            await service.createAccout(createAccoutArgs);
+            expect(userRepository.create).toHaveBeenCalledTimes(1);
+            expect(userRepository.create).toHaveBeenCalledWith(createAccoutArgs);
+            expect(userRepository.save).toHaveBeenCalledTimes(1)
+            expect(userRepository.save).toHaveBeenCalledWith(createAccoutArgs);
         });
     });
     it.todo('login');
