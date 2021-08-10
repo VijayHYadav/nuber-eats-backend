@@ -11,7 +11,7 @@ const mockRepository = () => ({
     findOne: jest.fn(),
     save: jest.fn(),
     create: jest.fn(),
-})
+});
 
 const mockJwtService = {
     sign: jest.fn(),
@@ -28,6 +28,8 @@ describe("UserService", () => {
 
     let service: UsersService;
     let userRepository: MockRepository<User>;
+    let verificationRespository: MockRepository<Verification>;
+    let mailService: MailService;
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
@@ -51,7 +53,9 @@ describe("UserService", () => {
             ]
         }).compile();
         service = module.get<UsersService>(UsersService);
+        mailService = module.get<MailService>(MailService);
         userRepository = module.get(getRepositoryToken(User));
+        verificationRespository = module.get(getRepositoryToken(Verification));
     });
 
     it('should be defined', () => {
@@ -78,11 +82,30 @@ describe("UserService", () => {
         it('should create a new user', async () => {
             userRepository.findOne.mockReturnValue(undefined);
             userRepository.create.mockReturnValue(createAccoutArgs);
-            await service.createAccout(createAccoutArgs);
+            userRepository.save.mockResolvedValue(createAccoutArgs);
+            verificationRespository.create.mockReturnValue({
+                user: createAccoutArgs
+            });
+            verificationRespository.save.mockResolvedValue({
+                code: "code"
+            });
+            const result = await service.createAccout(createAccoutArgs);
+
             expect(userRepository.create).toHaveBeenCalledTimes(1);
             expect(userRepository.create).toHaveBeenCalledWith(createAccoutArgs);
+
             expect(userRepository.save).toHaveBeenCalledTimes(1)
             expect(userRepository.save).toHaveBeenCalledWith(createAccoutArgs);
+
+            expect(verificationRespository.create).toHaveBeenCalledTimes(1);
+            expect(verificationRespository.create).toHaveBeenCalledWith({ user: createAccoutArgs });
+
+            expect(verificationRespository.save).toHaveBeenCalledTimes(1)
+            expect(verificationRespository.save).toHaveBeenCalledWith({ user: createAccoutArgs });
+
+            expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
+            expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(expect.any(String), expect.any(String));
+            expect(result).toEqual({ ok: true });
         });
     });
     it.todo('login');
