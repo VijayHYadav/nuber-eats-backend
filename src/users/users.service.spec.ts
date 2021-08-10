@@ -72,7 +72,7 @@ describe("UserService", () => {
             expect(result).toMatchObject({
                 ok: false,
                 error: 'There is a user with that email already',
-            })
+            });
         });
     });
     it.todo('login');
