@@ -179,7 +179,38 @@ describe("UserService", () => {
 
     describe('editProfile', () => {
 
+        it("should change email", async () => {
+            const oldUser = {
+                email: 'bs@old.com',
+                verified: true,
+            };
+            const editProfileArgs = {
+                userId: 1,
+                input: { email: 'bs@new.com' },
+            };
+            const newVerification = {
+                code: 'code'
+            };
+            const newUser = {
+                verified: false,
+                email: editProfileArgs.input.email,
+            };
+            userRepository.findOne.mockResolvedValue(oldUser);
+            verificationRespository.create.mockReturnValue(newVerification);
+            verificationRespository.save.mockReturnValue(newVerification);
+
+            await service.editProfile(editProfileArgs.userId, editProfileArgs.input);
+
+            expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(userRepository.findOne).toHaveBeenCalledWith(editProfileArgs.userId);
+
+            expect(verificationRespository.create).toHaveBeenCalledWith({ user: newUser });
+            expect(verificationRespository.save).toHaveBeenCalledWith(newVerification,);
+
+            expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(newUser.email, newVerification.code);
+        });
+
     });
-    
+
     it.todo('verifyEmail');
 });
