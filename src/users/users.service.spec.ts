@@ -11,6 +11,7 @@ const mockRepository = () => ({
     findOne: jest.fn(),
     save: jest.fn(),
     create: jest.fn(),
+    findOneOrFail: jest.fn(),
 });
 
 const mockJwtService = {
@@ -114,7 +115,7 @@ describe("UserService", () => {
         it('should fail on exception', async () => {
             userRepository.findOne.mockRejectedValue(new Error(":"));
             const result = await service.createAccout(createAccoutArgs);
-            expect(result).toEqual({ ok: false, error: "Couldn't create account" })
+            expect(result).toEqual({ ok: false, error: "Couldn't create account" });
         });
 
     });
@@ -151,9 +152,34 @@ describe("UserService", () => {
             expect(jwtService.sign).toHaveBeenCalledTimes(1);
             expect(jwtService.sign).toHaveBeenCalledWith(expect.any(Number));
             expect(result).toEqual({ ok: true, token: 'signed-token-baby' });
-        })
+        });
+
+        it('should fail on exception', async () => {
+            userRepository.findOne.mockRejectedValue(new Error(":"));
+            const result = await service.login(loginArgs);
+            expect(result).toEqual({ ok: false, error: "Can't log user in." })
+        });
     });
-    it.todo('findById');
-    it.todo('editProfile');
+    describe('findById', () => {
+        const findByArgs = {
+            id: 1
+        }
+        it('should find an existing user', async () => {
+            userRepository.findOneOrFail.mockResolvedValue(findByArgs);
+            const result = await service.findById(1);
+            expect(result).toEqual({ ok: true, user: findByArgs });
+        });
+
+        it('should fail if no user is found', async () => {
+            userRepository.findOneOrFail.mockRejectedValue(new Error());
+            const result = await service.findById(1);
+            expect(result).toEqual({ ok: false, error: 'User Not Found' });
+        });
+    });
+
+    describe('editProfile', () => {
+
+    });
+    
     it.todo('verifyEmail');
 });
