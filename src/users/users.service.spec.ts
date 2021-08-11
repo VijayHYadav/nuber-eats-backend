@@ -20,7 +20,6 @@ const mockJwtService = () => ({
     verify: jest.fn()
 });
 
-
 const mockMailService = () => ({
     sendVerificationEmail: jest.fn(),
 });
@@ -261,7 +260,7 @@ describe("UserService", () => {
             const result = await service.verifyEmail('');
             expect(result).toEqual({ ok: false, error: 'Verification not found.' });
         });
-        
+
         it("should fail on exception", async () => {
             verificationRespository.findOne.mockRejectedValue(new Error());
             const result = await service.verifyEmail('');
