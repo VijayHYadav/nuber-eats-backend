@@ -8,17 +8,13 @@ import { EmailVar, MailModuleOptions } from './mail.interfaces';
 export class MailService {
     constructor(@Inject(CONFIG_OPTIONS) private readonly options: MailModuleOptions) { }
 
-    async sendEmail(
-        subject: string,
-        template: string,
-        emailVars: EmailVar[],
-    ) {
+    async sendEmail(subject: string, template: string, emailVars: EmailVar[]): Promise<boolean> {
         const form = new FormData();
         form.append('from', `Vijay From Nuber Eats <mailgun@${this.options.domain}>`);
         form.append('to', `kuttarohit318@gmail.com`);
         form.append('subject', subject);
         form.append('template', template);
-        form.append('v:code', 'randome code');
+        // form.append('v:code', 'randome code');
         emailVars.forEach(eVar => form.append(`v:${eVar.key}`, eVar.value));
 
         try {
@@ -28,8 +24,9 @@ export class MailService {
                 },
                 body: form,
             });
+            return true;
         } catch (error) {
-            console.log("ERR0R=>", error)
+            return false;
         }
     }
 
