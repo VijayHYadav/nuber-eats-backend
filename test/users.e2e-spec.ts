@@ -22,6 +22,10 @@ describe('AppController (e2e)', () => {
   let verificationsRepository: Repository<Verification>;
   let jwtToken: string;
 
+  const baseTest = () => request(app.getHttpServer()).post(GRAPHQL_ENDPOINT);
+  const publicTest = (query: string) => baseTest().send({ query });
+  const privateTest = (query: string) => baseTest().set('X-JWT', jwtToken).send({ query });
+
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -45,8 +49,7 @@ describe('AppController (e2e)', () => {
 
   describe('createAccount', () => {
     it('should create account', () => {
-      return request(app.getHttpServer()).post(GRAPHQL_ENDPOINT).send({
-        query: `
+      return publicTest(`
         mutation {
           createAccount(input: {
             email: "${testUser.email}",
@@ -58,7 +61,7 @@ describe('AppController (e2e)', () => {
           }
         }
         `,
-      })
+      )
         .expect(200)
         .expect(res => {
           expect(res.body.data.createAccount.ok).toBe(true);
@@ -155,10 +158,7 @@ describe('AppController (e2e)', () => {
       userId = user.id;
     });
     it("should see a user's profile", () => {
-      return request(app.getHttpServer()).post(GRAPHQL_ENDPOINT)
-        .set(`X-JWT`, jwtToken)
-        .send({
-          query: `
+      return privateTest(`
         {
           userProfile(userId:${userId}){
             ok
@@ -169,7 +169,7 @@ describe('AppController (e2e)', () => {
           }
         }
         `,
-        })
+      )
         .expect(200)
         .expect(res => {
           const { body: { data: { userProfile: { ok, error, user: { id } } } } } = res;
