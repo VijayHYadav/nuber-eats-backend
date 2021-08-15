@@ -5,7 +5,7 @@ import { RestaurantResolver } from './restaurants.resolver';
 import { RestaurantService } from './restaurants.service';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Restaurant])], // basically this allows you to import typeormmodule for a specific feature in this case it is Restaurant.
-    providers: [RestaurantResolver, RestaurantService]
+  imports: [TypeOrmModule.forFeature([Restaurant])], // basically this allows you to import typeormmodule for a specific feature in this case it is Restaurant.
+  providers: [RestaurantResolver, RestaurantService],
 })
 export class RestaurantsModule {}

@@ -1,7 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import * as Joi from 'joi'; // this is how to import that package that has only js / javascript no ts / typescript.
 import { ConfigModule } from '@nestjs/config';
-import { GraphQLModule } from '@nestjs/graphql'
+import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
@@ -31,7 +36,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
         MAILGUN_API_KEY: Joi.string().required(),
         MAILGUN_DOMAIN_NAME: Joi.string().required(),
         MAILGUN_FROM_EMAIL: Joi.string().required(),
-      })
+      }),
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -41,15 +46,16 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
-      logging: process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
-      entities: [User, Verification, Restaurant, Category]
+      logging:
+        process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
+      entities: [User, Verification, Restaurant, Category],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       context: ({ req }) => ({ user: req['user'] }),
     }),
     JwtModule.forRoot({
-      privateKey: process.env.PRIVATE_KEY
+      privateKey: process.env.PRIVATE_KEY,
     }),
     MailModule.forRoot({
       apiKey: process.env.MAILGUN_API_KEY,
@@ -63,19 +69,18 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
   controllers: [],
   providers: [],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(JwtMiddleware).forRoutes({
-      path: "/graphql",
+      path: '/graphql',
       // path: "*",
-      method: RequestMethod.POST
+      method: RequestMethod.POST,
       // method: RequestMethod.ALL
-    })
+    });
   }
 }
 
 // Notes
 // forRoot is used to configure the root module, in this case GraphQLModule is for root module
 
-// We can't just create GraphQL Server we need typeDefs, resolver, GraphQL schema. 
+// We can't just create GraphQL Server we need typeDefs, resolver, GraphQL schema.
