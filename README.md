@@ -19,3 +19,10 @@ The Backend of Number Eats Clone
 - See Profile
 - Edit Profile
 - Verify Email
+
+## Restaurant Model
+
+- name
+- category
+- address
+- coverImage
