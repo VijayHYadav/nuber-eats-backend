@@ -20,7 +20,7 @@ The Backend of Number Eats Clone
 - Edit Profile
 - Verify Email
 
-## Restaurant Model
+## Restaurant Entity
 
 - name
 - category
