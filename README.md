@@ -1,5 +1,7 @@
 # Number Eats
 
+# Note: This README.md is not well documented.
+
 The Backend of Number Eats Clone
 
 ## User Entity:
