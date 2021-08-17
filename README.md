@@ -28,3 +28,15 @@ The Backend of Number Eats Clone
 - category
 - address
 - coverImage
+
+- See Categories
+- See Restaurants by Category (pagination)
+- See Restaurants (pagination)
+- See Restaurants
+
+- Edit Restaurants
+- Delete Restaurants
+
+- Create Dish
+- Edit Dish
+- Delete Dish
