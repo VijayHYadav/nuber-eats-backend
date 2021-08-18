@@ -29,13 +29,21 @@ The Backend of Number Eats Clone
 - address
 - coverImage
 
+- Edit Restaurants
+- Delete Restaurants
+
+## Category Entity
+
+- name
+- coverImg
+- slug
+  OneToMany
+- restaurants
+
 - See Categories
 - See Restaurants by Category (pagination)
 - See Restaurants (pagination)
 - See Restaurants
-
-- Edit Restaurants
-- Delete Restaurants
 
 - Create Dish
 - Edit Dish
