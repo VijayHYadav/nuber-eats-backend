@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
 import { User, UserRole } from 'src/users/entities/user.entity';
@@ -54,8 +54,8 @@ export class CategoryResolver {
   constructor(private readonly restaurantService: RestaurantService) { }
 
   @ResolveField(type => Number)
-  restaurantCount(): number {
-    return 80;
+  restaurantCount(@Parent() category: Category): Promise<number> {
+    return this.restaurantService.countRestaurants(category);
   }
 
   @Query(type => AllCategoriesOutput)
