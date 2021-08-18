@@ -10,6 +10,7 @@ import {
 } from './dtos/create-restaurant.dto';
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from './dtos/delete-restaurant.dto';
 import { EditRestaurantInput, EditRestaurantOuput } from './dtos/edit-restaurant.dto';
+import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
@@ -21,8 +22,6 @@ export class RestaurantService {
     private readonly restaurants: Repository<Restaurant>,
     private readonly categories: CategoryRepository,
   ) { }
-
-
 
   async createRestaurant(
     owner: User,
@@ -146,10 +145,11 @@ export class RestaurantService {
         take: 25,
         skip: (page - 1) * 1,
       });
-      category.restaurants = restaurants;
+      // category.restaurants = restaurants;
       const totalResults = await this.countRestaurants(category);
       return {
         ok: true,
+        restaurants,
         category,
         totalPages: Math.ceil(totalResults / 25),
       }
@@ -160,4 +160,22 @@ export class RestaurantService {
       }
     }
   }
+
+  async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
+    try {
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({ skip: (page - 1) * 1, take: 25, });
+      return {
+        ok: true,
+        results: restaurants,
+        totalPages: Math.ceil(totalResults / 25),
+        totalResults,
+      }
+    } catch {
+      return {
+        ok: false,
+        error: "Could not load restaurants",
+      }
+    }
+  }
+
 }
