@@ -14,7 +14,7 @@ export enum OrderStatus {
 
 registerEnumType(OrderStatus, { name: 'OrderStatus' })
 
-@InputType('RestaurantInputType', { isAbstract: true })
+@InputType('OrderInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 export class Order extends CoreEntity {
@@ -48,9 +48,9 @@ export class Order extends CoreEntity {
     @JoinTable()
     dishes: Dish[];
 
-    @Column()
-    @Field((type) => Float)
-    total: number;
+    @Column({nullable: true})
+    @Field((type) => Float, {nullable: true})
+    total?: number;
 
     @Column({ type: "enum", enum: OrderStatus })
     @Field((type) => OrderStatus)
