@@ -8,10 +8,11 @@ import { Column, Entity, JoinTable, ManyToMany, ManyToOne, RelationId } from 'ty
 import { OrderItem } from './order-item.entity';
 
 export enum OrderStatus {
-    Pending,
-    Cooking,
-    PickedUp,
-    Delivered,
+    Pending = 'Pending',
+    Cooking = 'Cooking',
+    Cooked = 'Cooked',
+    PickedUp = 'PickedUp',
+    Delivered = 'Delivered',
 }
 
 registerEnumType(OrderStatus, { name: 'OrderStatus' })
