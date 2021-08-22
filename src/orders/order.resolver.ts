@@ -10,7 +10,7 @@ import { GetOrdersInput, GetOrdersOutput } from "./dtos/get-orders.dto";
 import { Order } from "./entities/order.entity";
 import { OrderService } from "./orders.service";
 
-const pubsub = new PubSub();
+const pubSub = new PubSub();
 
 @Resolver(of => Order)
 export class OrderResolver {
@@ -50,8 +50,16 @@ export class OrderResolver {
         return this.ordersService.editOrder(user, editOrderInput);
     }
 
+    @Mutation(returns => Boolean)
+    potatoReady() {
+        pubSub.publish('hotPotatos', {
+            readyPotato: 'Your potato is ready. love you.',
+        });
+        return true;
+    }
+
     @Subscription(returns => String)
-    hotPotatos() {
-        return pubsub.asyncIterator("hot Potatos");
+    readyPotato() {
+        return pubSub.asyncIterator('hotPotatos');
     }
 }
