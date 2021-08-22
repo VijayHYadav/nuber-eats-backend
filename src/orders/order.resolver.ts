@@ -59,6 +59,7 @@ export class OrderResolver {
     }
 
     @Subscription(returns => String)
+    @Role(['Any'])
     readyPotato() {
         return pubSub.asyncIterator('hotPotatos');
     }
