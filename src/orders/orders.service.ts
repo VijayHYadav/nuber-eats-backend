@@ -76,13 +76,11 @@ export class OrderService {
                 total: orderFinalPrice,
                 items: orderItems,
             }));
-            await this.pubSub.publish(NEW_PENDING_ORDER, { pendingOrders: order });
-            // this.orders.create({
-            //     customer,
-            //     restaurant,
-            //     total: orderFinalPrice,
-            //     items: orderItems,
-            // });
+            await this.pubSub.publish(NEW_PENDING_ORDER, {
+                pendingOrders: {
+                    order, ownerId: restaurant.ownerId
+                }
+            });
             return {
                 ok: true,
             }
