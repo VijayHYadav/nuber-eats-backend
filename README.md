@@ -54,6 +54,11 @@ The Backend of Number Eats Clone
 
 - Payments (CRON)
 
+## Order Subscription:
+  - Pending Orders (s: newOrder) (t: createOrder(newOrder))
+  - Order Status (Customer, Delivery, Owner) (s: orderUpdate) (t: editOrder)
+  - Pending Pickup Order (Delivery) (s: orderUpdate) (t: editOrder(orderUpdate))
+
 <!--
 
 mutation {
