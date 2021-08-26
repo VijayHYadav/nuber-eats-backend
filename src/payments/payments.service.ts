@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Restaurant } from "src/restaurants/entities/restaurant.entity";
 import { User } from "src/users/entities/user.entity";
-import { Repository } from "typeorm";
+import { LessThan, Repository } from "typeorm";
 import { CreatePaymentInput, CreatePaymentOutput } from "./dtos/create-payment.dto";
 import { GetPaymentsOutput } from "./dtos/get-payments.dto";
 import { Payment } from "./entities/payment.entity";
@@ -14,7 +14,6 @@ export class PaymentService {
         private readonly payments: Repository<Payment>,
         @InjectRepository(Restaurant)
         private readonly restaurants: Repository<Restaurant>,
-        private schedulerRegistry: SchedulerRegistry,
     ) { }
 
     async createPayment(owner: User, { transactionId, restaurantId }: CreatePaymentInput): Promise<CreatePaymentOutput> {
@@ -32,6 +31,11 @@ export class PaymentService {
                     error: 'You are not allowed to do this.',
                 };
             }
+            restaurant.isPromoted = true;
+            const date = new Date();
+            date.setDate(date.getDate() + 7);
+            restaurant.promotedUntil = date;
+            this.restaurants.save(restaurant);
             await this.payments.save(this.payments.create({
                 transactionId,
                 user: owner,
@@ -63,28 +67,17 @@ export class PaymentService {
         }
     }
 
-    @Cron('30 * * * * *')
-    checkForPayments() {
-        console.log('Checking for payments......(cron)')
-    }
-
-    @Cron('30 * * * * *', {
-        name: 'myJob'
-    })
-    checkForPaymentsDynamic() {
-        console.log('Checking for payments......(cron)(dynamic)');
-        const job = this.schedulerRegistry.getCronJob("myJob");
-        console.log(job);
-        job.stop();
-    }
-
-    @Interval(3000)
-    checkForPaymentsI() {
-        console.log('Checking for payments.......(interval)')
-    }
-
-    @Timeout(2000)
-    afterStarts() {
-        console.log('Congrats!')
+    @Interval(2000)
+    async checkPromotedRestaurants() {
+        const restaurants = await this.restaurants.find({
+            isPromoted: true,
+            promotedUntil: LessThan(new Date())
+        });
+        console.log(restaurants)
+        restaurants.forEach(async (restaurant) => {
+            restaurant.isPromoted = false
+            restaurant.promotedUntil = null
+            await this.restaurants.save(restaurant);
+        });
     }
 }
