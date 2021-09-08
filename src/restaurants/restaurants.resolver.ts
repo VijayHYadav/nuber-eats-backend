@@ -14,6 +14,7 @@ import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto';
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from './dtos/delete-restaurant.dto';
 import { EditDishInput, EditDishOutput } from './dtos/edit-dish.dto';
 import { EditRestaurantInput, EditRestaurantOuput } from './dtos/edit-restaurant.dto';
+import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 import { SearchRestaurantInput, SearchRestaurantOutput } from './dtos/search-restaurant.dto';
@@ -36,6 +37,12 @@ export class RestaurantResolver {
       authUser,
       createRestaurantInput,
     );
+  }
+
+  @Query(returns => MyRestaurantsOutput)
+  @Role(['Owner'])
+  myRestaurants(@AuthUser() owner: User): Promise<MyRestaurantsOutput> {
+    return this.restaurantService.myRestaurants(owner);
   }
 
   @Mutation(returns => EditRestaurantOuput)
