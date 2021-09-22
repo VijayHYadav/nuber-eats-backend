@@ -348,8 +348,10 @@ export class RestaurantService {
     { id }: MyRestaurantInput,
   ): Promise<MyRestaurantOutput> {
     try {
-      const restaurant = await this.restaurants.findOne({ owner, id });
-        // { relations: ['menu', 'orders'] },
+      const restaurant = await this.restaurants.findOne(
+        { owner, id },
+        { relations: ['menu'] }
+      );
       return {
         restaurant,
         ok: true,
